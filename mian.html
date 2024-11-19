@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Integration Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            padding-top: 60px; /* Make space for the sticky score */
+        }
+        .score-container {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 10px 20px;
+            border-bottom: 1px solid #eee;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .option:hover:not(.correct):not(.incorrect) {
+            background-color: #f0f0f0;
+        }
+        .correct {
+            background-color: #90EE90;
+            pointer-events: none;
+        }
+        .incorrect {
+            background-color: #FFB6C1;
+            pointer-events: none;
+        }
+        #score {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .progress {
+            font-size: 1em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="score-container">
+            <div id="score">Score: 0/0 (0%)</div>
+            <div class="progress">Questions answered: <span id="progress">0/0</span></div>
+        </div>
+        <h1>Data Integration Quiz</h1>
+        <div id="quiz"></div>
+    </div>
+
+    <script>
+       
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function displayQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            // Shuffle the questions
+            const shuffledQuestions = shuffleArray([...quizData]);
+            
+            shuffledQuestions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                const shuffledOptions = shuffleArray([...question.options]);
+                const correctAnswer = question.options[question.correct];
+                const correctIndex = shuffledOptions.indexOf(correctAnswer);
+
+                questionDiv.innerHTML = `
+                    <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                    <div class="options">
+                        ${shuffledOptions.map((option, i) => `
+                            <div class="option" data-correct="${i === correctIndex}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+
+            updateProgress();
+
+            // Add click event listeners to options
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (!this.classList.contains('correct') && !this.classList.contains('incorrect')) {
+                        const isCorrect = this.dataset.correct === 'true';
+                        this.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        
+                        if (!isCorrect) {
+                            const siblings = this.parentElement.children;
+                            Array.from(siblings).forEach(sib => {
+                                if (sib.dataset.correct === 'true') {
+                                    sib.classList.add('correct');
+                                }
+                            });
+                        }
+
+                        if (isCorrect) score++;
+                        answeredQuestions++;
+                        
+                        const siblings = this.parentElement.children;
+                        Array.from(siblings).forEach(sib => {
+                            sib.style.pointerEvents = 'none';
+                        });
+
+                        updateScore();
+                        updateProgress();
+                    }
+                });
+            });
+        }
+
+        function updateScore() {
+            const percentage = Math.round((score / answeredQuestions) * 100);
+            document.getElementById('score').innerHTML = 
+                `Score: ${score}/${answeredQuestions} (${percentage}%)`;
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').textContent = 
+                `${answeredQuestions}/${quizData.length}`;
+        }
+
+        // Initialize quiz
+        displayQuiz();
+    </script>
+</body>
+</html>ç

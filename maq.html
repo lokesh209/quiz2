@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Integration Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 100%;
+            margin: 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            box-sizing: border-box;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            padding-top: 60px;
+        }
+        .score-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 0.9em;
+        }
+        .question {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            line-height: 1.4;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option:active {
+            background-color: #f0f0f0;
+        }
+        .correct {
+            background-color: #90EE90;
+            pointer-events: none;
+        }
+        .incorrect {
+            background-color: #FFB6C1;
+            pointer-events: none;
+        }
+        #score {
+            font-weight: bold;
+        }
+        .progress {
+            color: #666;
+        }
+        h1 {
+            font-size: 1.5em;
+            margin-top: 0;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            .quiz-container {
+                padding: 10px;
+                padding-top: 50px;
+            }
+            .option {
+                padding: 10px;
+            }
+            .score-container {
+                padding: 8px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="score-container">
+            <div id="score">Score: 0/0 (0%)</div>
+            <div class="progress">Progress: <span id="progress">0/0</span></div>
+        </div>
+        <h1>Data Integration Quiz</h1>
+        <div id="quiz"></div>
+    </div>
+
+    <script>
+        const quizData = [
+        
+        {
+            question: "According to lecture 16, slide 54 'Color film was designed to take pictures of white people, Not people of color'. Which type of bias is most likely the reason for not highlighting the features of people of color in photographs?",
+            options: [
+                "Selection bias",
+                "Reporting bias", 
+                "Automation bias",
+                "Group attribution bias",
+                "No Bias at all"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture 16 based on Machine Learning Fairness, what does 'in-group bias' refer to in the context of group attribution bias?",
+            options: [
+                "A preference for members of a group to which you also belong, or for characteristics you share with them",
+                "A preference for members outside your group, viewing them as more uniform",
+                "A tendency to misreport data about your own group",
+                "A focus on unusual events within your group",
+                "A preference for avoiding automated systems within your group"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to slide 16 of lecture, which of the following AI applications would likely to be pursued by Google?",
+            options: [
+                "An AI system designed to enhance medical diagnostic efficiency, helping doctors quickly identify diseases and generate treatment recommendations",
+                "An AI tool specifically designed to monitor and record personal activities, it can bypass privacy protection regulations",
+                "An AI system for automated weapons targeting, execute military attacks without human intervention",
+                "An AI tool that generates false information for cyberattacks and social manipulation",
+                "An AI application developed to support actions that violate international human rights laws"
+            ],
+            correct: 0
+        },
+        {
+            question: "Below is a question based on the lecture given on Machine Learning Fairness. Which of the following scenarios best depicts Reporting Bias?",
+            options: [
+                "A medical dataset contains only the data of patients from hospitals that report certain rare diseases more frequently",
+                "Some specific minority groups are misclassified by a machine learning algorithm throughout all job applications",
+                "A system where doctors rely more on AI to make diagnoses despite clinical evidence to the contrary",
+                "Data points selected by researchers to fit their hypothesis in order to improve the performance of a model",
+                "The facial recognition system performs worse on images of people from the darker-skinned population"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the Lecture 16 on Machine learning fairness, which bias among the following is not an example of Selection Bias?",
+            options: [
+                "In-group bias",
+                "Coverage bias",
+                "Sampling bias",
+                "Non-response bias"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on ML Fairness, what is the primary concern with historical bias in machine learning models?",
+            options: [
+                "It reinforces existing inequities present in the training data",
+                "It results from inaccuracies during the model training phase",
+                "It causes overfitting to rare patterns in the dataset",
+                "It leads to a complete misclassification of test data",
+                "It occurs only in models with low computational resources"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture on ML - Fairness, what does the lecture identify as a type of bias where model builders unconsciously process data in ways that affirm preexisting beliefs or hypotheses?",
+            options: [
+                "Confirmation bias",
+                "Automation bias",
+                "Selection bias",
+                "Group attribution bias",
+                "Reporting bias"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on crowdsourcing, the use of crowdsourcing to locate Jim Gray is an example of what?",
+            options: [
+                "A public search effort using distributed intelligence",
+                "A successful military operation",
+                "A failed crowdsourcing experiment",
+                "An online fundraising campaign"
+            ],
+            correct: 0
+        },
+        {
+            question: "What is the primary benefit of setting clear expectations and guidelines for tasks on a crowdsourcing platform?",
+            options: [
+                "It ensures that tasks are completed more accurately and efficiently",
+                "It increases the cost of project management",
+                "It decreases the diversity of approaches to task completion",
+                "It extends the time required to complete tasks",
+                "It discourages new workers from joining the platform"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on Crowdsourcing, which strategy is essential for ensuring high-quality results when assigning tasks to a crowd of workers?",
+            options: [
+                "Providing multiple annotations and using redundancy",
+                "Relying on a single worker for efficiency",
+                "Avoiding qualifications to increase participation",
+                "Paying the lowest possible wage to maximize cost savings",
+                "Letting workers create their own tasks for greater flexibility"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture 16 on ML - Fairness, what does the lecture identify as a type of bias that occurs when the frequency of events in a dataset doesn't reflect their real-world frequency?",
+            options: [
+                "Reporting bias",
+                "Automation bias",
+                "Selection bias",
+                "Group attribution bias",
+                "Confirmation bias"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on Machine Learning Fairness, which scenario best illustrates the real-world impact of Automation Bias in AI and Machine learning?",
+            options: [
+                "Doctors relying heavily on an AI diagnostic system's recommendations, even when their clinical judgment suggests otherwise",
+                "A crime prediction AI system leading to increased policing in certain neighborhoods without considering socioeconomic factors",
+                "An AI-driven job application screening tool inadvertently filtering out qualified candidates from underrepresented groups",
+                "Researchers developing a machine learning model unconsciously selecting data that supports their initial hypothesis",
+                "A social media algorithm showing users only information that aligns with their existing beliefs, creating echo chambers"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on ML fairness, how can implicit bias in feature selection impact the interpretability of machine learning models?",
+            options: [
+                "By amplifying correlations that are statistically significant but ethically problematic",
+                "By introducing redundancies in feature engineering that reduce overall efficiency",
+                "By eliminating weakly correlated features, increasing reliance on stronger ones",
+                "By prioritizing categorical variables over continuous variables, reducing feature clarity"
+            ],
+            correct: 0
+        },
+        {
+            question: "Which of the following scenarios best illustrates Simpson's Paradox in the context of machine learning bias?",
+            options: [
+                "A model shows overall higher approval rates for minority loan applicants, but when data is separated by income levels, approval rates are lower for minorities in each income bracket",
+                "A facial recognition system performs equally well across all ethnicities in lab tests but shows decreased accuracy for certain groups in real-world applications",
+                "An AI recruitment tool favors male candidates overall, but analysis reveals it's due to a higher proportion of male applicants in STEM fields",
+                "A sentiment analysis model shows no bias in general text classification but struggles with accurately interpreting sarcasm in social media posts"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture 16, which of the following is NOT a common bias in the AI/ML pipeline?",
+            options: [
+                "Causal Bias",
+                "Reporting Bias",
+                "Confirmation Bias",
+                "Automation Bias",
+                "Selection Bias"
+            ],
+            correct: 0
+        },
+        {
+            question: "What is the significance of Term Frequency (TF) and Inverse Document Frequency (IDF) in information retrieval?",
+            options: [
+                "TF calculates how frequently a term appears in a document, and IDF reduces the weight of common terms across documents",
+                "TF measures the rarity of a term in all documents, while IDF measures the frequency of a term within a single document",
+                "TF and IDF are only used in ranking images in search engines",
+                "Both TF and IDF are used only to find the longest document in a dataset"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on ML Fairness, what does the out-group homogeneity refer to in the context of group attribution bias?",
+            options: [
+                "The tendency to view members of a group which you do not belong as more similar to one another than they actually are",
+                "The tendency to believe that members of your own group are more diverse in their characteristics than members of other groups",
+                "Favoritism shown towards individuals who are part of your own group",
+                "Viewing individual members of all groups as having entirely unique traits, regardless of their group membership"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture what ethical consideration is most critical when addressing fairness in AI systems?",
+            options: [
+                "Avoiding bias in data collection, processing, and model outcomes",
+                "Ensuring high-speed deployment of AI models",
+                "Allowing algorithms to operate without external oversight",
+                "Prioritizing technological advancements over societal impact"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to Lecture 16, How can Simpson's Paradox impact decision-making in real-world scenarios?",
+            options: [
+                "It can lead to incorrect conclusions if aggregate data is used without analyzing subgroups",
+                "It ensures that decisions are always more accurate when based on subgroup analysis",
+                "It eliminates the need for confounding variables in data analysis",
+                "It guarantees that trends observed in subgroups are irrelevant for decision-making",
+                "It supports using random guesses as a reliable method for data-driven decisions"
+            ],
+            correct: 0
+        },
+        {
+            question: "Using lecture 16 on Machine Learning Fairness as a reference, Consider a scenario where you want to determine which university has the highest acceptance rate for women. You gather data from two universities, A and B, and find that University A has a higher overall acceptance rate for women compared to University B. However, upon further analysis, you break the data down by undergraduate and graduate female applicants, and find that University B has a higher acceptance rate for women in both categories. What phenomenon might be occurring here?",
+            options: [
+                "Simpson's Paradox",
+                "Selection Bias",
+                "Confirmation Bias",
+                "Overfitting"
+            ],
+            correct: 0
+        },
+        {
+            question: "Based on Lecture 16, a machine learning team is building a model to predict loan approvals. Below are some scenarios related to their data collection process. Which one is NOT an example of selection bias?",
+            options: [
+                "The team favors using automated methods to pre-process data, even when errors in the automation are known",
+                "The dataset includes only data from urban customers, ignoring rural regions",
+                "The survey responses used for training the model are mostly from individuals who voluntarily participated, leaving out non-respondents",
+                "During data collection, the team focuses only on high-income applicants and excludes low-income groups from the dataset",
+                "The data is collected primarily during weekdays, missing data from individuals with weekend work schedules"
+            ],
+            correct: 0
+        },
+        {
+            question: "Which of the following concepts refers to the tendency of a machine learning model to favor one outcome over others due to unbalanced training data?",
+            options: [
+                "Bias",
+                "Variance",
+                "Overfitting",
+                "Regularization",
+                "Dropout"
+            ],
+            correct: 0
+        },
+        {
+            question: "Which metric is most suitable for evaluating the reliability of crowdsourced labels?",
+            options: [
+                "Cohen's kappa",
+                "Cross-entropy loss",
+                "Area Under the Curve (AUC)",
+                "Learning rate",
+                "Batch size"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture, what is the primary advantage of Gated Recurrent Units (GRUs) over Long Short-Term Memory (LSTM) networks?",
+            options: [
+                "GRUs are simpler and have fewer parameters",
+                "GRUs include a long-term memory gate for better performance",
+                "GRUs are specialized for processing two-dimensional data",
+                "GRUs automatically adapt kernel sizes for convolutional operations",
+                "GRUs eliminate the need for backpropagation during training"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture (Deep Learning PPT), what is the primary role of the forget gate in a Long Short-Term Memory (LSTM) neuron?",
+            options: [
+                "To decide whether previous information should be retained or discarded",
+                "To control the amount of new information added to the memory cell",
+                "To determine what portion of the cell state should be output",
+                "To prevent the vanishing gradient problem during backpropagation",
+                "To ensure the neuron remembers all input sequences without modification"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture, which of the following steps is NOT explicitly part of the AI/ML pipeline?",
+            options: [
+                "Data Cleaning",
+                "Model Deployment",
+                "Deployed Model Feedback",
+                "Data Visualization",
+                "Data Generation"
+            ],
+            correct: 3
+        },
+        {
+            question: "According to the lecture, what is the key difference between recurrent neural networks (RNNs) and traditional feedforward neural networks that makes RNNs particularly suited for sequential data?",
+            options: [
+                "The output of an RNN is fed back into itself, giving the neuron memory over time and allowing it to consider previous inputs when making decisions",
+                "RNNs have more layers than traditional neural networks, allowing them to process more complex patterns",
+                "RNNs use different activation functions than traditional neural networks, making them more accurate",
+                "RNNs require less training data than traditional neural networks because they are more efficient",
+                "RNNs process all inputs simultaneously rather than sequentially, making them faster at pattern recognition"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture, what is a Recurrent Neural Network (RNN) designed to handle?",
+            options: [
+                "Sequential data or time series data",
+                "Only image classification tasks",
+                "Exclusively binary classification problems",
+                "Continuous, non-sequential data streams"
+            ],
+            correct: 0
+        },
+        {
+            question: "Imagine you are building a machine learning model to detect hate speech on social media. You decide to use crowdsourcing to label your dataset. Which of the following steps would best ensure high-quality labels from the crowdworkers?",
+            options: [
+                "Provide clear labeling guidelines and examples for crowdworkers to follow",
+                "Pay crowdworkers only after they complete a large batch of tasks to reduce costs",
+                "Assign each piece of data to a single worker to speed up the labeling process",
+                "Allow crowdworkers to freely interpret the task without specific instructions",
+                "Use random internet users without screening their qualifications"
+            ],
+            correct: 0
+        },
+        {
+            question: "What is the primary purpose of the Error-Time Area (ETA) metric introduced in the paper 'Measuring Crowdsourcing Effort with Error-Time Curves'?",
+            options: [
+                "To determine a task's fair price by empirically modeling the relationship between time and error rate",
+                "To evaluate the accuracy of tasks performed by crowdsourcing workers",
+                "To identify tasks that are most frequently performed in crowdsourcing systems",
+                "To assess the satisfaction of workers with their assigned tasks"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture What is a common cause of bias in machine learning models?",
+            options: [
+                "Imbalanced training data",
+                "The use of complex neural networks",
+                "The choice of activation functions",
+                "Optimizing for high accuracy"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on ML Bias and Fairness, what is the most effective approach for a tech company developing a facial recognition system to address potential biases and improve overall performance across different demographic groups?",
+            options: [
+                "Implement a crowdsourcing initiative to collect and label a large, diverse dataset of facial images from various sources",
+                "Use a small, highly curated dataset of facial images from company employees to train the deep learning model",
+                "Rely solely on synthetic data generated by AI to avoid any potential real-world biases",
+                "Train the model using publicly available celebrity images to ensure high-quality data",
+                "Focus exclusively on optimizing the neural network architecture without considering the training data composition"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture and the readings, what is one of the primary challenges in ensuring fairness in crowdsourcing tasks?",
+            options: [
+                "The potential for biased labeling by contributors",
+                "The inability of crowdsourcing platforms to attract contributors",
+                "The high computational cost of verifying crowd-sourced data",
+                "The lack of interest from researchers in crowdsourcing",
+                "Using unicorns to perform the labeling tasks"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture in the class, as mentioned by the professor, in the crowdsourced search for Jim Gray, a legendary computer scientist who went missing at sea in 2007, what was one of the key lessons learned about the power of crowdsourcing in such large-scale search-and-rescue operations?",
+            options: [
+                "Crowdsourcing was effective because it allowed volunteers to analyze large amounts of satellite imagery quickly, but it also highlighted the importance of task coordination and expertise matching",
+                "The crowdsourced effort failed because volunteers lacked the necessary technical skills to analyze satellite images, proving that only experts should be involved in such tasks",
+                "Crowdsourcing was ineffective because it took too long for volunteers to organize, and by the time they started analyzing images, the search area had already shifted significantly",
+                "The search for Jim Gray demonstrated that crowdsourcing is only useful for small-scale tasks and not for large-scale operations like search-and-rescue missions",
+                "Crowdsourcing succeeded because it eliminated the need for professional rescue teams, showing that amateurs can handle complex operations independently"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on deep learning, what is the primary purpose of using hidden layers in neural networks?",
+            options: [
+                "To enable the network to learn complex, non-linear relationships in the data",
+                "To reduce the computational cost of training the network",
+                "To prevent overfitting by limiting the number of parameters",
+                "To simplify the network architecture for easier interpretation",
+                "To ensure that all input features are equally weighted"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the Deep Learning Video Lecture, What is one of the primary challenges that Long Short-Term Memory (LSTM) neurons help to solve in Recurrent Neural Networks (RNNs)?",
+            options: [
+                "They manage long-term dependencies",
+                "They reduce the computational complexity of training",
+                "They address the problem of vanishing gradients",
+                "They simplify the network architecture",
+                "They eliminate the need for activation functions"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the Lecture, What is the purpose of an activation function in a feedforward neural network?",
+            options: [
+                "Introduce non-linearity to the model",
+                "Reduce the dimensionality of the input data",
+                "Normalize the input data",
+                "Prevent overfitting of the model",
+                "Initialize the weights in the neural network"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to Lecture 15, why is fixing information asymmetry important in crowdsourcing markets?",
+            options: [
+                "To ensure workers understand what is expected of them and avoid wasted effort",
+                "To prevent redundancy in task assignments",
+                "To maximize the speed of task completion",
+                "To incentivize workers to accept low-pay tasks",
+                "To reduce the need for qualifications in task assignments"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture 16, automation bias could potentially lead to:",
+            options: [
+                "Over-reliance on AI-generated results without critical evaluation",
+                "Increased skepticism towards all AI-generated outputs",
+                "Complete rejection of automated systems in decision-making processes",
+                "Equal consideration of automated and non-automated results",
+                "Automatic correction of all AI-generated errors"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on bias in AI/ML pipelines, which of the following best describes automation bias?",
+            options: [
+                "Favoring results generated by automated systems over non-automated systems, regardless of error rates",
+                "Preferring automated systems because they eliminate all forms of bias from the data pipeline",
+                "Using automated systems exclusively for generating training data in machine learning models",
+                "Rejecting results from manual processes in favor of human intuition over automation",
+                "Automatically correcting errors in datasets without human intervention"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture 16, slide 13 (Machine Learning - Fairness), what does Simpson's Paradox demonstrate about trends in data?",
+            options: [
+                "A trend between two variables can reverse in all subgroups of the data",
+                "Trends remain consistent across subgroups regardless of data aggregation",
+                "Trends in data are unaffected by the choice of variables",
+                "A correlation indicates a causal relationship in all cases",
+                "Data trends can be accurately predicted by Deadpool after a coffee-fueled argument with Wolverine"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture, why is Pearson's Correlation Coefficient important in data analysis?",
+            options: [
+                "It quantifies the strength and direction of the relationship between two variables",
+                "It eliminates all forms of bias in a dataset",
+                "It simplifies the data collection process",
+                "It determines the computational complexity of the model"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on AI fairness, which of the following biases occurs when a data set's examples are chosen in a way that is not reflective of their real-world distribution?",
+            options: [
+                "Selection bias",
+                "Reporting bias",
+                "Automation bias",
+                "Confirmation bias",
+                "Measurement bias"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture 16, slides 45-47 on ML Fairness, which of the following statements best describes Group Attribution Bias?",
+            options: [
+                "It is a tendency to generalize what is true of individuals to an entire group to which they belong",
+                "It occurs if a data set's examples are chosen in a way that is not reflective of their real-world distribution",
+                "It is a tendency to favour results generated by automated systems over those generated by non-automated systems, irrespective of the error rates of each",
+                "It occurs when the frequency of events, properties, and/or outcomes captured in a data set does not accurately reflect their real-world frequency",
+                "It occurs when model builders unconsciously process data in ways that affirm preexisting beliefs and hypotheses"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on ML fairness, how can implicit bias in feature selection impact the interpretability of machine learning models?",
+            options: [
+                "By amplifying correlations that are statistically significant but ethically problematic",
+                "By introducing redundancies in feature engineering that reduce overall efficiency",
+                "By eliminating weakly correlated features, increasing reliance on stronger ones",
+                "By prioritizing categorical variables over continuous variables, reducing feature clarity"
+            ],
+            correct: 0
+        },
+       
+      
+        {
+            question: "According to lecture, Which correlation coefficient range indicates a moderate correlation in real-world data?",
+            options: [
+                "0.3 < |r| < 0.7",
+                "0 < |r| < 0.3",
+                "|r| > 0.7",
+                "|r| = 0"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture, Which of these is not an objective for AI Applications(Reference Lecture 16 Slides)?",
+            options: [
+                "Create Technologies that cause or likely to cause harm",
+                "Uphold high standards of Scientific excellence",
+                "Avoid Creating unfair bias",
+                "Be socially beneficial",
+                "Incorporate Privacy Design Principles"
+            ],
+            correct: 0
+        },
+        {
+            question: "Which of the following best describes why deep learning models are particularly susceptible to bias?",
+            options: [
+                "They learn directly from the data, which may contain inherent biases",
+                "They rely on human-engineered features that may introduce bias",
+                "They are designed to prioritize certain demographic groups over others",
+                "They require explicit coding of biases into their architecture"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to lecture on crowdsourcing, A company is evaluating Amazon Mechanical Turk (MTurk) for various tasks. Which of the following tasks would MTurk be MOST suitable for?",
+            options: [
+                "Conducting basic data labeling tasks, such as image classification and text transcription",
+                "Developing complex software applications that require high technical expertise",
+                "Providing detailed legal analysis and expert-level annotations for regulatory documents",
+                "Designing and implementing a machine learning algorithm from scratch"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to research on measuring crowdsourcing as discussed in the lecture on Crowdsourcing, what is the main purpose of using error-time (E/T) curves in evaluating crowd-sourced tasks?",
+            options: [
+                "To identify the optimal balance between accuracy and speed in task performance",
+                "To measure the number of workers required to complete a task",
+                "To increase the financial incentives for faster task completion",
+                "To track changes in worker demographics over time",
+                "To display a ranking of the highest-performing workers"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the speaker lecture on unified keyboard creation, how is the keyboard layout decided?",
+            options: [
+                "Keystrokes of the typer",
+                "Number of characters present in the language",
+                "Arrangement based on phonetic similarities",
+                "Adaptation to fit touchscreen typing"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture, what is the key suggestion to fix market issues in crowdsourcing?",
+            options: [
+                "Ensure workers receive good compensation",
+                "Decrease transparency in task assignments",
+                "Encourage complex task requirements",
+                "Limit feedback on workers performance"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture, What is a common challenge when using crowdsourcing for data collection in machine learning?",
+            options: [
+                "Ensuring data consistency and accuracy across diverse workers",
+                "Crowdsourcing automatically eliminates all data biases",
+                "Crowdsourcing is more time-consuming than individual expert labeling",
+                "Crowdsourcing always produces lower-quality data than expert labeling",
+                "Crowdsourcing reduces the need for data validation and quality checks"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on the Red Balloon Challenge, what strategy did MIT's team use to encourage people to share information about balloon sightings?",
+            options: [
+                "A multi-level reward system",
+                "Direct payment for each balloon sighted",
+                "A social media post campaign",
+                "Volunteer recruitment",
+                "GPS app tracking"
+            ],
+            correct: 0
+        },
+        {
+            question: "In the lecture's example of DARPA's Red Balloon Challenge, what concept was DARPA primarily testing through crowdsourcing?",
+            options: [
+                "Network dynamics and collective problem-solving",
+                "Independent task management",
+                "Worker loyalty and long-term commitment",
+                "Quality assurance of simple tasks",
+                "Efficiency of one-on-one task assignments"
+            ],
+            correct: 0
+        },
+        {
+            question: "In the context of deep learning, which of the following statements accurately describes the role of backpropagation?",
+            options: [
+                "Backpropagation is a technique used to update the weights in a neural network by calculating the gradient of the loss function with respect to each weight",
+                "Backpropagation is a method for collecting large datasets through crowdsourcing platforms",
+                "Backpropagation improves model interpretability by transforming complex models into linear functions",
+                "Backpropagation is used to distribute labeled data across multiple neural network layers for improved performance",
+                "Backpropagation exclusively updates the biases in neural networks, leaving weights unchanged"
+            ],
+            correct: 0
+        },
+        {
+            question: "In crowdsourcing, what is a key benefit of assigning qualifications to workers, as discussed in the lecture?",
+            options: [
+                "It ensures tasks are matched to workers with the appropriate skills, improving task quality",
+                "It decreases the need for task instructions, as skilled workers know what to do",
+                "It allows requesters to pay workers less due to their specialized expertise",
+                "It enables a faster task completion rate regardless of task complexity",
+                "It eliminates the possibility of task misunderstandings completely"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the article 'Expert Crowdsourcing with Flash Teams', which of the following features of flash teams enables faster project completion by allowing downstream tasks to begin before upstream tasks are fully completed?",
+            options: [
+                "Pipelining",
+                "Replication",
+                "Sequential processing",
+                "Centralized management",
+                "Independent work blocks"
+            ],
+            correct: 0
+        },
+        {
+            question: "According to the lecture on Crowdsourcing, what is a common issue faced by Amazon Mechanical Turk (AMT) workers as described in the slides?",
+            options: [
+                "AMT workers often earn wages significantly below the US minimum wage",
+                "AMT workers are usually provided with extensive training before starting",
+                "Requesters are required by AMT to pay at least $7.25 per hour to workers",
+                "AMT has strict regulations that prevent information asymmetry between requesters and workers",
+                "All AMT workers earn more than $11 per hour on average"
+            ],
+            correct: 0
+        },
+        {
+        question: "According to the lecture on Crowdsourcing, what was the primary reason behind the creation of the term 'crowdsourcing'?",
+        options: [
+            "To describe how companies began using the Internet to outsource tasks to a large group of people",
+            "To explain how social media platforms allow users to share content",
+            "To describe the rise of online shopping and e-commerce",
+            "To illustrate the concept of individuals freelancing for multiple companies",
+            "To promote the use of artificial intelligence in business operations"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on Crowdsourcing, which practice is recommended to improve fairness and quality in crowdsourced markets by reducing information asymmetry?",
+        options: [
+            "Assign qualifications based on worker skill to ensure task relevance and clear expectations",
+            "Limit worker access to project context to prevent data leakage",
+            "Increase allowable work hours to maximize output",
+            "Create a competitive reward system to drive worker engagement",
+            "Minimize compensation to encourage only the most efficient workers to participate"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to lecture15, Which of the following is a key distinction between Upwork and Amazon Mechanical Turk (AMT) as crowdsourcing platforms?",
+        options: [
+            "Upwork focuses on longer-term projects and hiring specialists for higher pay",
+            "Upwork is primarily designed for microtasks that require no prior experience",
+            "Upwork only allows workers from the United States and India to participate",
+            "Upwork does not support custom code integration for task design",
+            "Upwork requires workers to complete tasks within 24 hours of assignment"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, what approach is highlighted as a key method to reduce potential errors and biases in data collection?",
+        options: [
+            "Incorporating multiple layers of review with diverse workers to verify accuracy",
+            "Assigning tasks based solely on the geographical location of workers",
+            "Reducing task complexity to ensure faster completion times",
+            "Allowing requesters to ignore responses from new workers"
+        ],
+        correct: 0
+    },
+    {
+        question: "What defines the role of a 'requester' on Amazon Mechanical Turk, as covered in the reading?",
+        options: [
+            "A person or entity that designs tasks and offers payment for their completion",
+            "An individual responsible for training workers before they begin tasks",
+            "A user who completes tasks and receives payments for each one",
+            "A moderator ensuring quality and managing workers on the platform",
+            "A consultant who recommends HITs to new workers"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to lecture, what primary characteristic distinguishes Amazon Mechanical Turk (MTurk) from other crowdsourcing platforms?",
+        options: [
+            "The flexibility to support arbitrary custom code",
+            "Its emphasis on completing large projects requiring intensive training",
+            "The ability to post unlimited tasks at no cost to the requester",
+            "Its focus on recruiting only full-time workers from various countries",
+            "Its focus on generating revenue from platform subscriptions"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on Crowdsourcing, what significant aspect of the Jim Gray search effort demonstrated an early application of crowdsourcing's potential?",
+        options: [
+            "The unprecedented mobilization of satellite imagery analysis by distributed volunteers coordinated through an online platform",
+            "The use of social media to spread awareness about the search",
+            "The implementation of monetary rewards for information",
+            "The reliance on professional search and rescue teams only",
+            "The limitation of search efforts to coastal areas"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, what is the basic workflow for posting tasks on Amazon Mechanical Turk?",
+        options: [
+            "Requesters design a UI, post HITs, deposit money, workers complete tasks, and requesters review and approve work",
+            "Workers bid on projects and requesters select the lowest bidder",
+            "Requesters post jobs and negotiate rates with individual workers",
+            "Workers submit portfolios and requesters hire based on experience",
+            "Requesters post tasks and automatically approve all submissions"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, how can real-time captioning benefit from crowdsourcing?",
+        options: [
+            "It distributes the task among multiple participants for faster results",
+            "It allows a single expert to provide high-quality captions quickly",
+            "It ensures that only automated systems generate captions",
+            "It limits redundancy by preventing collaborative input"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the article 'Expert Crowdsourcing with Flash Teams', what is a key result of utilizing Foundry and flash teams for crowdsourcing?",
+        options: [
+            "They enable crowdsourcing for diverse goals such as design prototyping, course development, and film animation",
+            "They enable crowdsourcing to reduce project costs by eliminating traditional team roles",
+            "They enable crowdsourcing to focus on long-term projects and extended timelines",
+            "They enable crowdsourcing to maintain the same number of team members throughout the project"
+        ],
+        correct: 0
+    },
+    {
+        question: "What type of task is most suitable for crowdsourcing?",
+        options: [
+            "Data annotation for machine learning models",
+            "Writing code for a complex algorithm",
+            "Strategic business planning",
+            "Conducting sensitive internal audits",
+            "Creating proprietary software architectures"
+        ],
+        correct: 0
+    },
+    {
+        question: "Which of the following features is unique to Amazon Mechanical Turk as compared to other platforms like Upwork and Scale?",
+        options: [
+            "It is specifically oriented towards 1–10 million microtasks",
+            "It primarily supports large, long-term projects",
+            "It only hires full-time employees",
+            "It does not allow custom code integration",
+            "It focuses exclusively on European markets"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to lecture 15 (Crowdsourcing), in the context of the 'Market for Lemons,' what is the most likely long-term consequence when buyers cannot assess quality of products in a market?",
+        options: [
+            "High-quality sellers exit the market, leading to a decline in overall market quality",
+            "Low-quality sellers exit the market as they cannot compete with high-quality sellers",
+            "Buyers increase their willingness to pay more, hoping to obtain higher-quality products",
+            "The market reaches an equilibrium where all products are of uniform high quality"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, what is the primary purpose of the Scribe system as explained in the Real Time Captioning by Group of Non Experts?",
+        options: [
+            "To allow users to caption audio in real-time by merging inputs from multiple non-expert captionists",
+            "To enable professional transcriptionists to produce captions for pre-recorded videos",
+            "To improve audio quality in live broadcasts",
+            "To create a database of common phrases used in spoken language",
+            "To enhance automatic speech recognition (ASR) systems for better captioning accuracy"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture which of the following is a challenge often faced in crowdsourcing that 'fixing information asymmetry' aims to address?",
+        options: [
+            "Miscommunication between workers and requesters",
+            "Lack of internet access for workers",
+            "Inadequate number of tasks",
+            "Excessive worker qualifications"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, what was a primary purpose of using redundancy (such as multiple annotations) in crowdsourcing tasks?",
+        options: [
+            "To improve the quality of data by verifying results through repetition",
+            "To decrease costs by limiting the number of workers involved",
+            "To ensure tasks are completed faster by simplifying worker responsibilities",
+            "To reduce the qualifications needed by each worker",
+            "To encourage more workers to participate by offering repetitive tasks"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to lecture 15 (Crowdsourcing), which of the following is a primary motivator for crowd participants that can positively impact the quality of their work?",
+        options: [
+            "Offering fair compensation for tasks completed",
+            "Limiting opportunities for communication with task requesters",
+            "Randomly assigning tasks without considering worker preferences",
+            "Setting strict, non-negotiable deadlines for all tasks",
+            "Providing minimal information to keep tasks open-ended"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to lecture, What is a common characteristic of the workforce on Amazon Mechanical Turk, particularly in terms of their geographical distribution and educational background?",
+        options: [
+            "They are mostly based in the US or India, and are typically part-time, college educated",
+            "They are primarily from the US and UK, and most have a high school education",
+            "Most workers are from Canada and Australia, and are full-time employees",
+            "They are studying at the University of Florida under Computer Science with a specialization in Cloud Technology, joining hybrid classes"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to lecture on Crowdsourcing, which of the following is NOT a common practice in crowdsourcing platforms like MTurk?",
+        options: [
+            "Allowing workers unlimited time to complete tasks",
+            "Assigning qualifications for specific tasks",
+            "Offering clear guidelines to workers",
+            "Multiple annotations for quality",
+            "Using telepathic communication for instructions"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, what is one benefit of using multiple annotations in crowdsourcing?",
+        options: [
+            "Increases accuracy through redundancy",
+            "Eliminates the need for quality control",
+            "Reduces the overall cost of the project",
+            "Speeds up project completion",
+            "Ensures the data is always unbiased"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, What was the primary objective of DARPA's '10 Red Balloons' Challenge in 2009?",
+        options: [
+            "To test the power of social networks and crowdsourcing in locating specific objects across large distances",
+            "To measure the effectiveness of artificial intelligence in finding hidden objects",
+            "To develop GPS-based technology for military tracking",
+            "To analyze public response times in a simulated emergency scenario",
+            "To study drone navigation in locating scattered targets"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, which of the following practices helps prevent information asymmetry in crowdsourcing tasks?",
+        options: [
+            "Providing clear and comprehensive task guidelines",
+            "Reducing the number of workers involved in each task",
+            "Limiting workers to tasks within their local region",
+            "Avoiding multiple annotations to speed up task completion",
+            "Assigning tasks without any instructions to encourage creativity"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on Crowdsourcing, which of the following statements is true about Amazon Mechanical Turk?",
+        options: [
+            "It is the largest and oldest marketplace for microtasks, supporting flexible, custom code",
+            "It is exclusively available to workers in the United States and canada",
+            "It mainly targets high-paying freelance projects for highly skilled professionals",
+            "It primarily focuses on large-scale, full-time employment opportunities",
+            "Most workers on Amazon Mechanical Turk are full-time employees with advanced degrees"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, what is the main benefit of using flash teams?",
+        options: [
+            "Dynamically assembling expert teams to handle complex and interdependent tasks",
+            "Limiting the scope of tasks to prevent overlap",
+            "Reducing costs by using non-experts for all tasks",
+            "Completing tasks independently without team coordination",
+            "Eliminating the need for feedback loops in task management"
+        ],
+        correct: 0
+    },
+    {
+        question: "In the context of crowdsourcing, which of the following best describes a primary advantage of using a crowdsourcing platform to gather labeled data?",
+        options: [
+            "It allows for scalable and diverse data collection from a large number of contributors",
+            "It ensures that all data is labeled by experts in the field",
+            "It reduces the need for any quality control on data labels",
+            "It limits the input to a small, controlled group of people",
+            "It avoids any risk of biased data being collected"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, What is a key strategy to improve the quality of crowdsourced data?",
+        options: [
+            "Relying on task redundancy to verify accuracy",
+            "Increasing the complexity of tasks assigned",
+            "Limiting the number of workers on each task",
+            "Allowing workers to determine task guidelines"
+        ],
+        correct: 0
+    },
+    {
+        question: "In crowdsourcing, how does redundancy contribute to improving data quality in large-scale annotation tasks?",
+        options: [
+            "It allows multiple workers to annotate the same task, enabling consistency checks across responses",
+            "It reduces the need for clear task guidelines, as worker errors are automatically averaged out",
+            "It minimizes the number of workers required for each task, saving time and resources",
+            "It ensures each worker annotates unique tasks to maximize data coverage",
+            "It automatically corrects errors in annotations through AI-based analysis"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to lecture15, Which of the following strategies is NOT recommended for improving the crowdsourcing market?",
+        options: [
+            "Using only a single annotation per task to save costs",
+            "Ensuring good pay for workers",
+            "Assigning qualifications to workers",
+            "Reducing information asymmetry by clarifying expectations"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, which of the following techniques can help mitigate algorithmic bias in machine learning models?",
+        options: [
+            "Reweighting samples from underrepresented groups in the training dataset",
+            "Reducing the training data size to focus on core examples",
+            "Ignoring outliers to prevent them from impacting the model",
+            "Using the same dataset for both training and testing",
+            "Selecting features solely based on model performance metrics"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, which of the following is a recommended way to prevent workers' time from being wasted in crowdsourcing tasks?",
+        options: [
+            "Clearly defining what is acceptable in task guidelines",
+            "Limiting the number of tasks a worker can perform",
+            "Reducing task pay to encourage faster completion",
+            "Automatically rejecting tasks that take longer than average",
+            "Assigning tasks randomly to workers without considering qualifications"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture, which term was coined by Jeff Howe and Mark Robinson in 2006 to describe the use of the Internet to 'outsource work to the crowd'?",
+        options: [
+            "Crowdsourcing",
+            "Open Innovation",
+            "Distributed Computing",
+            "Crowdfunding",
+            "Social Networking"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, in the context of measuring crowdsourcing effort, how is the Error-Time Area (ETA) defined?",
+        options: [
+            "As the area under the error-time curve, used to evaluate and determine the fair price of a task by understanding the relationship between time and error rate",
+            "As the total time workers spend on a task",
+            "As the average error rate over multiple tasks",
+            "As the highest error point on the curve",
+            "As the difference between expected and actual completion time"
+        ],
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, what is one major problem that occurs in crowdsourcing when there is a lack of clear guidelines?",
+        options: [
+            "Information asymmetry",
+            "Worker overqualification",
+            "Task redundancy",
+            "Increased worker pay"
+        ],
+        correct: 0
+    },
+    {
+        question: "Which of the following is suggested to improve the crowdsourcing market according to the document?",
+        options: [
+            "Assign qualifications to workers",
+            "Reduce worker pay to increase competition", 
+            "Rely on a single annotation for quality",
+            "Minimize feedback to avoid wasting time",
+            "Eliminate redundancy in task assignment"
+        ],
+       
+        correct: 0
+    },
+    {
+        question: "According to the lecture on crowdsourcing, which method is essential to ensure quality in crowdsourced work?",
+        options: [
+            "Using multiple annotations and relying on redundancy",
+            "Randomly assigning tasks without providing instructions",
+            "Limiting crowdsourcing tasks to a small group of experts",
+            "Avoiding redundancy to save time and resources",
+            "Asking a magic 8-ball before approving any results"
+        ],
+        
+        correct: 0
+    }
+    
+        ];
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function displayQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            const shuffledQuestions = shuffleArray([...quizData]);
+            
+            shuffledQuestions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                const shuffledOptions = shuffleArray([...question.options]);
+                const correctAnswer = question.options[question.correct];
+                const correctIndex = shuffledOptions.indexOf(correctAnswer);
+
+                questionDiv.innerHTML = `
+                    <p><strong>Q${index + 1}:</strong> ${question.question}</p>
+                    <div class="options">
+                        ${shuffledOptions.map((option, i) => `
+                            <div class="option" data-correct="${i === correctIndex}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+
+            updateProgress();
+
+            // Add click event listeners to options
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (!this.classList.contains('correct') && !this.classList.contains('incorrect')) {
+                        const isCorrect = this.dataset.correct === 'true';
+                        this.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        
+                        if (!isCorrect) {
+                            const siblings = this.parentElement.children;
+                            Array.from(siblings).forEach(sib => {
+                                if (sib.dataset.correct === 'true') {
+                                    sib.classList.add('correct');
+                                }
+                            });
+                        }
+
+                        if (isCorrect) score++;
+                        answeredQuestions++;
+                        
+                        const siblings = this.parentElement.children;
+                        Array.from(siblings).forEach(sib => {
+                            sib.style.pointerEvents = 'none';
+                        });
+
+                        updateScore();
+                        updateProgress();
+                    }
+                });
+            });
+        }
+
+        function updateScore() {
+            const percentage = Math.round((score / answeredQuestions) * 100);
+            document.getElementById('score').innerHTML = 
+                `Score: ${score}/${answeredQuestions} (${percentage}%)`;
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').textContent = 
+                `${answeredQuestions}/${quizData.length}`;
+        }
+
+        // Initialize quiz
+        displayQuiz();
+    </script>
+</body>
+</html>
